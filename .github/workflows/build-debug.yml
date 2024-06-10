@@ -47,7 +47,7 @@ jobs:
         path: ${{ github.workspace }}/build/AndroidLibXrayLt/*.aar
 
     - name: test go
-      run: go --version
+      run: gomobile version
 
     - name: Build dependencies
       if: steps.librae.outputs.cache-hit != 'true'
