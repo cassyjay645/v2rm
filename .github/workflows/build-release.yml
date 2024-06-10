@@ -1,0 +1,107 @@
+name: Build debug
+
+on:
+  workflow_dispatch:
+    inputs:
+      #release_tag:
+      #  description: 'release tag'
+      #  required: true
+      XRAY_CORE_VERSION:
+        description: 'Xray core version or commit hash'
+        required: false
+
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Java
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'temurin'
+        java-version: '17'
+
+    - name: Setup Golang
+      uses: actions/setup-go@v5
+      with:
+        go-version: '1.22.2'
+
+    - name: Install gomobile
+      run: |
+        go install golang.org/x/mobile/cmd/gomobile@latest
+        echo "$(go env GOPATH)/bin" >> $GITHUB_PATH
+
+
+    - name: Setup Android environment
+      uses: android-actions/setup-android@v3
+      
+    - name: cache deps
+      id: librae
+      uses: actions/cache@v4
+      with:
+        key: libraey
+        path: ${{ github.workspace }}/build/AndroidLibXrayLt/*.aar
+
+
+    - name: Build dependencies
+      if: steps.librae.outputs.cache-hit != 'true'
+      run: |
+        mkdir ${{ github.workspace }}/build
+        cd ${{ github.workspace }}/build
+        git clone --depth=1 -b main https://github.com/cassyjay645/AndroidLibXrayLt.git
+        cd AndroidLibXrayLt
+        go get github.com/xtls/xray-core@${{ github.event.inputs.XRAY_CORE_VERSION }} || true
+        gomobile init
+        go mod tidy -v
+        gomobile bind -v -androidapi 19 -ldflags='-s -w' ./
+        
+    - name: cpr
+      run: cp ${{ github.workspace}}/build/AndroidLibXrayLt/*.aar ${{ github.workspace }}/V2rayNG/app/libs/
+        
+    - name: lsdr
+      run: ls -R ${{github.workspace}}/build
+    
+    - name: Upload .aar
+      uses: actions/upload-artifact@v4
+      with:
+        name: libv2ray.aar
+        path: ${{ github.workspace }}/build/AndroidLibXrayLt/*.aar
+        
+        
+    #- name: wget deps
+    #  run: |
+    #    mkdir deps
+    #    cd deps
+    #    wget https://github.com/cassyjay645/AndroidLibXrayLt/releases/download/v001/libv2ray.aar
+    #    ls -R
+    #    cp *.aar ${{github.workspace}}/V2rayNG/app/libs/
+        
+      
+    - name: Build APK
+      run: |
+        cd ${{ github.workspace }}/V2rayNG
+        chmod 755 gradlew
+        ./gradlew assembleDebug
+      
+    - name: lsd
+      run: ls V2rayNG/app/build/
+      
+    - name: Upload APK
+      uses: actions/upload-artifact@v4
+      with:
+        name: apk-debug
+        path: ${{ github.workspace }}/V2rayNG/app/build/outputs/apk/  
+        
+    - name: lsd
+      run: ls -R V2rayNG/app/build/outputs
+
+   # - name: Upload apk to release
+   #   uses: svenstaro/upload-release-action@v2
+   #   with:
+   #     file: ${{github.workspace}}/V2RayNG/app/build/outputs/apk/debug
+   #     tag: ${{ github.event.inputs.release_tag }}
+   #     file_glob: true
