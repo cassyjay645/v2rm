@@ -46,6 +46,8 @@ jobs:
         key: libraey
         path: ${{ github.workspace }}/build/AndroidLibXrayLt/*.aar
 
+    - name: test go
+      run: go --version
 
     - name: Build dependencies
       if: steps.librae.outputs.cache-hit != 'true'
@@ -60,7 +62,7 @@ jobs:
         gomobile bind -v -androidapi 19 -ldflags='-s -w' ./
         
     - name: cpr
-      run: cp ${{ github.workspace}}/build/AndroidLibXrayLt/*.aar ${{ github.workspace }}/V2rayNG/app/libs/
+      run: cp ${{ github.workspace}}/build/AndroidLibXrayLt/*.aar ${{ github.workspace }}/v2ray/app/libs/
         
     - name: lsdr
       run: ls -R ${{github.workspace}}/build
@@ -78,30 +80,30 @@ jobs:
     #    cd deps
     #    wget https://github.com/cassyjay645/AndroidLibXrayLt/releases/download/v001/libv2ray.aar
     #    ls -R
-    #    cp *.aar ${{github.workspace}}/V2rayNG/app/libs/
+    #    cp *.aar ${{github.workspace}}/v2ray/app/libs/
         
       
     - name: Build APK
       run: |
-        cd ${{ github.workspace }}/V2rayNG
+        cd ${{ github.workspace }}/v2ray
         chmod 755 gradlew
         ./gradlew assembleDebug
       
     - name: lsd
-      run: ls V2rayNG/app/build/
+      run: ls v2ray/app/build/
       
     - name: Upload APK
       uses: actions/upload-artifact@v4
       with:
         name: apk-debug
-        path: ${{ github.workspace }}/V2rayNG/app/build/outputs/apk/  
+        path: ${{ github.workspace }}/v2ray/app/build/outputs/apk/  
         
     - name: lsd
-      run: ls -R V2rayNG/app/build/outputs
+      run: ls -R v2ray/app/build/outputs
 
    # - name: Upload apk to release
    #   uses: svenstaro/upload-release-action@v2
    #   with:
-   #     file: ${{github.workspace}}/V2RayNG/app/build/outputs/apk/debug
+   #     file: ${{github.workspace}}/v2Ray/app/build/outputs/apk/debug
    #     tag: ${{ github.event.inputs.release_tag }}
    #     file_glob: true
