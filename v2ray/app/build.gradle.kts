@@ -21,6 +21,21 @@ android {
             )
         }
     }
+    
+    signingConfigs {
+        release {
+            storeFile file('debug_android.keystore')
+            storePassword 'android'
+            keyAlias = 'androiddebugkey'
+            keyPassword 'android'
+        }
+        debug {
+            storeFile file('debug_android.keystore')
+            storePassword 'android'
+            keyAlias = 'androiddebugkey'
+            keyPassword 'android'
+        }
+    }
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
@@ -29,11 +44,11 @@ android {
     buildTypes {
         release {
             isMinifyEnabled = false
-
+            signingConfig signingConfigs.release
         }
         debug {
             isMinifyEnabled = false
-
+            signingConfig signingConfigs.debug
         }
     }
 
