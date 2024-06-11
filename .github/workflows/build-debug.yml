@@ -46,9 +46,6 @@ jobs:
         key: libraey
         path: ${{ github.workspace }}/build/AndroidLibXrayLt/*.aar
 
-    - name: test go
-      run: gomobile
-
     - name: Build dependencies
       if: steps.librae.outputs.cache-hit != 'true'
       run: |
