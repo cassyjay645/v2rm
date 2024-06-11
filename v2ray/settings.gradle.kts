@@ -10,8 +10,7 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
-        jcenter()
     }
 }
-rootProject.name = "V2rayNG"
+rootProject.name = "v2ray"
 include(":app")
