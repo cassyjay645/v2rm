@@ -13,5 +13,5 @@ dependencyResolutionManagement {
         jcenter()
     }
 }
-rootProject.name = "V2ray"
+rootProject.name = "V2rayNG"
 include(":app")
