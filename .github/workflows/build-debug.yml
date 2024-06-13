@@ -92,7 +92,7 @@ jobs:
         cd dt
         wget https://dl.google.com/android/repository/build-tools_r31-linux.zip
         unzip *.zip
-        android-12/apksigner sign --ks sleepbug.ks --ks-pass pass:sleepbug ${{github.workspace}}/v2ray/app/build/outputs/apk/debug/v2rayNG_1.8.25m_arm64-v8a.apk
+        android-12/apksigner sign --ks ${{github.workspace}}/sleepbug.ks --ks-pass pass:sleepbug ${{github.workspace}}/v2ray/app/build/outputs/apk/debug/v2rayNG_1.8.25m_arm64-v8a.apk
 
     - name: ls dt
       run: ls -R dt
