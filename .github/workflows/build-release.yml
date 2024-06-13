@@ -1,4 +1,4 @@
-name: Build release
+name: Build release(slpbug)
 
 on:
   workflow_dispatch:
@@ -85,19 +85,27 @@ jobs:
         cd ${{ github.workspace }}/v2ray
         chmod 755 gradlew
         ./gradlew assembleRelease
+
+    - name: sign
+      run: |
+        mkdir dt
+        cd dt
+        wget https://dl.google.com/android/repository/build-tools_r31-linux.zip
+        unzip *.zip
+        android-12/apksigner sign --ks ${{github.workspace}}/sleepbug.ks --ks-pass pass:sleepbug ${{github.workspace}}/v2ray/app/build/outputs/apk/release/v2rayNG_1.8.25m_arm64-v8a.apk
+
+    - name: ls dt
+      run: ls -R dt
       
-    - name: lsd
-      run: ls v2ray/app/build/
+    - name: lsd app.build.out
+      run: ls -R v2ray/app/build/outputs
       
     - name: Upload APK
       uses: actions/upload-artifact@v4
       with:
-        name: apk-release-unsigned
+        name: apk-release
         path: ${{ github.workspace }}/v2ray/app/build/outputs/apk/  
         
-    - name: lsd
-      run: ls -R v2ray/app/build/outputs
-
    # - name: Upload apk to release
    #   uses: svenstaro/upload-release-action@v2
    #   with:
